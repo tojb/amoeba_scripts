@@ -46,7 +46,7 @@ if len(sys.argv) > 1:
 if len(sys.argv) > 2:
     param_file  = sys.argv[2]
 if len(sys.argv) > 3:
-    outfile     = sys.argv[3]
+    outFileName = sys.argv[3]
 
 
 shortNames = {\
@@ -89,6 +89,7 @@ preferred_nebs = {\
 "CG2" : {"CB", "CD", "CD2", "HG", "HG2"},
 "HG1" : {"CG1"},
 "HG2" : {"CG2"},
+"OXT" : {"COO-"},
 }
 
 
@@ -325,7 +326,7 @@ def build_nebKeys(key):
 
 def buildNebLists(xyzAtTypes, resList_pdb):
    i_at  = -1
-   rcut  = 10.  ##maximum covalent bond
+   rcut  =  8.  ##maximum covalent bond
    rcut2 = rcut*rcut
 
    ##build a cell list, geometric LUT
