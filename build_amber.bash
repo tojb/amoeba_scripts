@@ -1,8 +1,19 @@
 #!/bin/bash
 
+if [ "$#" -ge "1" ]
+then
+    sysName=$1
+else
+    echo "$0 : require system name (eg ilqins if reading ilqins.xyz)"
+    exit 1
+fi
 
-cat > ilqins_4x2x12.key <<EOF
-parameters amoebabio18.prm
+tink="$HOME/tinker"
+parmdir=$tink/params
+
+
+cat > $sysName.key <<EOF
+parameters $parmdir/amoebabio18.prm
 verbose
 
 a-axis 120.0
@@ -26,14 +37,14 @@ EOF
 ##and gives an info dump that can be a starting point to
 ##build a special amber-amoeba parmtop file.
 echo "running tinker analyze"
-/home/josh/tinker/bin/analyze -k ilqins_4x2x12.key ilqins_4x2x12_ipqVac.xyz PC > ilqins_4x2x12.analout
+$tink/bin/analyze -k $sysName.key $sysName.xyz PC > $sysName.analout
 
 echo "build analout: "
 ls -l *analout
 
 
-cat > ilqins_4x2x12.key <<EOF
-parameters amoebabio18
+cat > $sysName.key <<EOF
+parameters $parmdir/amoebabio18
 verbose
 a-axis 120.0
 b-axis 120.0
@@ -49,20 +60,19 @@ neighbor-list              # Use pairwise neighbor list for calculating
                            # nonbonded interactions (improves speed)
 EOF
 
-
-##tinker_to_amber cannot overwrite files, so make sure to clear old versions:
-rm -f ilqins_4x2x12_tinker2amber.top
-rm -f ilqins_4x2x12_tinker2amber.crd
-
 ##build the amber inputs, a special amoeba topfile and an associated
 ##crd.
-$AMBERHOME/bin/tinker_to_amber  -key ilqins_4x2x12.key <<EOF
-ilqins_4x2x12.analout
-ilqins_4x2x12.xyz
-ilqins_4x2x12.pdb
-ilqins_4x2x12
-ilqins_4x2x12_tinker2amber.top
-ilqins_4x2x12_tinker2amber.crd
+
+##tinker_to_amber cannot overwrite files, so make sure to clear old versions:
+rm -f ${sysName}_tinker2amber.top
+rm -f ${sysName}_tinker2amber.crd
+$AMBERHOME/bin/tinker_to_amber  -key $sysName.key <<EOF
+$sysName.analout
+$sysName.xyz
+$sysName.pdb
+$sysName
+${sysName}_tinker2amber.top
+${sysName}_tinker2amber.crd
 EOF
 			      
-
+echo "built: ${sysName}_tinker2amber.top  ${sysName}_tinker2amber.crd"
